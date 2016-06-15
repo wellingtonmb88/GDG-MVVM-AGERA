@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.wellingtonmb88.gitrepo.R;
-import com.wellingtonmb88.gitrepo.model.RepositoryModel.GitRepository;
+import com.wellingtonmb88.gitrepo.model.GitRepository;
 import com.wellingtonmb88.gitrepo.viewmodel.RepositoryViewModel;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.wellingtonmb88.gitrepo.model.RepositoryModel;
+package com.wellingtonmb88.gitrepo.model;
 
 
 import com.google.gson.annotations.SerializedName;

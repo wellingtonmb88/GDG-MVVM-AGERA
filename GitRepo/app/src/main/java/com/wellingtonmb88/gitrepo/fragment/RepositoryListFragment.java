@@ -24,7 +24,7 @@ import com.wellingtonmb88.gitrepo.R;
 import com.wellingtonmb88.gitrepo.adapter.RepositoryAdapter;
 import com.wellingtonmb88.gitrepo.databinding.FragmentRepositoryListBinding;
 import com.wellingtonmb88.gitrepo.listener.EndlessRecyclerOnScrollListener;
-import com.wellingtonmb88.gitrepo.model.RepositoryModel.GitRepository;
+import com.wellingtonmb88.gitrepo.model.GitRepository;
 import com.wellingtonmb88.gitrepo.preferences.RepositoryPreferences;
 import com.wellingtonmb88.gitrepo.utils.ConnectionUtils;
 import com.wellingtonmb88.gitrepo.utils.DividerItemDecoration;

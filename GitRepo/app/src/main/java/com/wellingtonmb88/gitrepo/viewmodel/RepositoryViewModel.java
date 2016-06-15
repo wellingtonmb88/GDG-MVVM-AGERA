@@ -5,7 +5,7 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
 import com.wellingtonmb88.gitrepo.BR;
-import com.wellingtonmb88.gitrepo.model.RepositoryModel.GitRepository;
+import com.wellingtonmb88.gitrepo.model.GitRepository;
 
 public class RepositoryViewModel extends BaseObservable {
 

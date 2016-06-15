@@ -15,8 +15,8 @@ import com.google.android.agera.Result;
 import com.google.android.agera.Updatable;
 import com.wellingtonmb88.gitrepo.BR;
 import com.wellingtonmb88.gitrepo.adapter.agera.HttpException;
-import com.wellingtonmb88.gitrepo.model.RepositoryModel.GitRepositories;
-import com.wellingtonmb88.gitrepo.model.RepositoryModel.GitRepository;
+import com.wellingtonmb88.gitrepo.model.GitRepositories;
+import com.wellingtonmb88.gitrepo.model.GitRepository;
 import com.wellingtonmb88.gitrepo.retrofit.RetrofitFactory;
 import com.wellingtonmb88.gitrepo.retrofit.service.RepositoryService;
 
