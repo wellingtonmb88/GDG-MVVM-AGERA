@@ -33,17 +33,12 @@ import com.wellingtonmb88.gitrepo.viewmodel.RepositoryListViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 public class RepositoryListFragment extends Fragment {
 
-    @BindView(R.id.list_repository)
-    public RecyclerView mRecyclerView;
-    private LinearLayoutManager mLayoutManager;
     private RepositoryListViewModel mViewModel;
-    private Unbinder mUnbinder;
+    private LinearLayoutManager mLayoutManager;
+    private FragmentRepositoryListBinding mBinding;
     private static List<GitRepository> sDataSet;
 
     public RepositoryListFragment() {
@@ -65,26 +60,22 @@ public class RepositoryListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_repository_list, container, false);
 
-        mUnbinder = ButterKnife.bind(this, view);
-
-        Context context = getContext();
-
-        FragmentRepositoryListBinding binding = DataBindingUtil.bind(view);
+        mBinding = DataBindingUtil.bind(view);
         mViewModel = new RepositoryListViewModel();
-        binding.setViewModel(mViewModel);
+        mBinding.setViewModel(mViewModel);
 
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(ContextCompat.
+        mBinding.listRepository.setHasFixedSize(true);
+        mBinding.listRepository.addItemDecoration(new DividerItemDecoration(ContextCompat.
                 getDrawable(getContext(), R.drawable.divider)));
 
-        mLayoutManager = new LinearLayoutManager(context);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mBinding.listRepository.setLayoutManager(mLayoutManager);
 
         sDataSet = new ArrayList<>();
 
         RepositoryAdapter repositoryAdapter = new RepositoryAdapter();
         repositoryAdapter.setDataSet(sDataSet);
-        mRecyclerView.setAdapter(repositoryAdapter);
+        mBinding.listRepository.setAdapter(repositoryAdapter);
 
         loadRepositoryListFromPreferences();
 
@@ -140,12 +131,12 @@ public class RepositoryListFragment extends Fragment {
                 mViewModel.downloadGitRepositoryList(query, 1, false);
             }
 
-            mRecyclerView.getAdapter().notifyDataSetChanged();
-            mRecyclerView.removeOnScrollListener(null);
+            mBinding.listRepository.getAdapter().notifyDataSetChanged();
+            mBinding.listRepository.removeOnScrollListener(null);
 
             RepositoryPreferences.saveRepositoryQuery(getContext(), query);
 
-            mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(mLayoutManager) {
+            mBinding.listRepository.addOnScrollListener(new EndlessRecyclerOnScrollListener(mLayoutManager) {
                 @Override
                 public void onLoadMore(int currentPage) {
                     mViewModel.downloadGitRepositoryList(query, currentPage, true);
@@ -199,9 +190,4 @@ public class RepositoryListFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mUnbinder.unbind();
-    }
 }
