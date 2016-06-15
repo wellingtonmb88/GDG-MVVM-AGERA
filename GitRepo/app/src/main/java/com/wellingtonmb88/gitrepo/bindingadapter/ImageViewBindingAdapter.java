@@ -12,9 +12,12 @@ import com.wellingtonmb88.gitrepo.R;
 public class ImageViewBindingAdapter {
 
     @BindingAdapter("url")
-    public static void setDataSet(final ImageView view, String url) {
+    public static void setUrl(final ImageView view, String url) {
         if (url != null) {
-            Glide.with(view.getContext()).load(url).placeholder(R.mipmap.ic_anonymous).listener(new RequestListener<String, GlideDrawable>() {
+            Glide.with(view.getContext())
+                    .load(url)
+                    .placeholder(R.mipmap.ic_anonymous)
+                    .listener(new RequestListener<String, GlideDrawable>() {
                 @Override
                 public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
                     return false;
