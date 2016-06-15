@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">GitRepo</string>
+
+    <string name="number_pull_request_opened">%1$s opened</string>
+    <string name="toast_message_no_internet_connection">No Internet Connection!</string>
+    <string name="toast_message_no_data">NO DATA!</string>
+    <string name="search_view_title_search_repository">Search Repository</string>
+</resources>
