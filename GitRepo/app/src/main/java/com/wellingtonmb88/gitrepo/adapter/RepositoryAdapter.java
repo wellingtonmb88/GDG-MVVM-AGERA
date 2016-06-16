@@ -11,10 +11,11 @@ import com.wellingtonmb88.gitrepo.R;
 import com.wellingtonmb88.gitrepo.model.GitRepository;
 import com.wellingtonmb88.gitrepo.viewmodel.RepositoryViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.ViewHolder> {
-    private List<GitRepository> mDataSet;
+    private List<RepositoryViewModel> mDataSet = new ArrayList<>();
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -31,8 +32,15 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.Vi
         }
     }
 
-    public void setDataSet(List<GitRepository> dataSet) {
-        mDataSet = dataSet;
+    public void addToDataSet(List<GitRepository> dataSet) {
+        for (GitRepository repo : dataSet) {
+            RepositoryViewModel viewModel = new RepositoryViewModel(repo);
+            mDataSet.add(viewModel);
+        }
+    }
+
+    public void clearDataSet() {
+        mDataSet.clear();
     }
 
     @Override
@@ -46,8 +54,8 @@ public class RepositoryAdapter extends RecyclerView.Adapter<RepositoryAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        RepositoryViewModel viewModel = new RepositoryViewModel(mDataSet.get(position));
-        holder.getViewDataBinding().setVariable(com.wellingtonmb88.gitrepo.BR.viewModel, viewModel);
+        holder.getViewDataBinding().setVariable(com.wellingtonmb88.gitrepo.BR.viewModel,
+                mDataSet.get(position));
     }
 
     @Override

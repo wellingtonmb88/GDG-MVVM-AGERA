@@ -39,7 +39,7 @@ public class RepositoryListFragment extends Fragment {
     private RepositoryListViewModel mViewModel;
     private LinearLayoutManager mLayoutManager;
     private FragmentRepositoryListBinding mBinding;
-    private static List<GitRepository> sDataSet;
+    private RepositoryAdapter mRepositoryAdapter;
 
     public RepositoryListFragment() {
         // Required empty public constructor
@@ -71,11 +71,8 @@ public class RepositoryListFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mBinding.listRepository.setLayoutManager(mLayoutManager);
 
-        sDataSet = new ArrayList<>();
-
-        RepositoryAdapter repositoryAdapter = new RepositoryAdapter();
-        repositoryAdapter.setDataSet(sDataSet);
-        mBinding.listRepository.setAdapter(repositoryAdapter);
+        mRepositoryAdapter  = new RepositoryAdapter();
+        mBinding.listRepository.setAdapter(mRepositoryAdapter);
 
         loadRepositoryListFromPreferences();
 
@@ -111,8 +108,8 @@ public class RepositoryListFragment extends Fragment {
                     }.getType());
 
             if (gitRepositoryList != null && !gitRepositoryList.isEmpty()) {
-                sDataSet.clear();
-                sDataSet.addAll(gitRepositoryList);
+                mRepositoryAdapter.clearDataSet();
+                mRepositoryAdapter.addToDataSet(gitRepositoryList);
                 String query = RepositoryPreferences.getRepositoryQuery(context);
 
                 if (!query.isEmpty()) {
@@ -127,7 +124,7 @@ public class RepositoryListFragment extends Fragment {
         if (ConnectionUtils.isConnected(getContext())) {
 
             if (!dataSaved) {
-                sDataSet.clear();
+                mRepositoryAdapter.clearDataSet();
                 mViewModel.downloadGitRepositoryList(query, 1, false);
             }
 
@@ -147,26 +144,7 @@ public class RepositoryListFragment extends Fragment {
         }
     }
 
-    @BindingAdapter({"dataSet", "errorMessage"})
-    public static void setDataSet(RecyclerView view, List<GitRepository> dataSet, String errorMessage) {
-        if (dataSet != null && !dataSet.isEmpty()) {
 
-            if (sDataSet.size() == 0) {
-                //Saving into the preferences just the items of first page
-                Gson gson = new Gson();
-                String dataSetJson = gson.toJson(dataSet);
-                RepositoryPreferences.saveRepositoryList(view.getContext(), dataSetJson);
-            }
-
-            sDataSet.addAll(dataSet);
-            int curSize = view.getAdapter().getItemCount();
-            view.getAdapter().notifyItemRangeInserted(curSize, sDataSet.size() - 1);
-        } else {
-            if (errorMessage != null) {
-                Toast.makeText(view.getContext(), errorMessage, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
