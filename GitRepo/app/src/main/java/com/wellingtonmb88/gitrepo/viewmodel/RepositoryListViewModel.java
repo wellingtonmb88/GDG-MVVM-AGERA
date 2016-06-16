@@ -11,10 +11,10 @@ import com.google.android.agera.Functions;
 import com.google.android.agera.Predicate;
 import com.google.android.agera.Receiver;
 import com.google.android.agera.Repository;
+import com.google.android.agera.RepositoryConfig;
 import com.google.android.agera.Result;
 import com.google.android.agera.Updatable;
 import com.wellingtonmb88.gitrepo.BR;
-import com.wellingtonmb88.gitrepo.adapter.agera.HttpException;
 import com.wellingtonmb88.gitrepo.model.GitRepositories;
 import com.wellingtonmb88.gitrepo.model.GitRepository;
 import com.wellingtonmb88.gitrepo.retrofit.RetrofitFactory;
@@ -23,6 +23,7 @@ import com.wellingtonmb88.gitrepo.retrofit.service.RepositoryService;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import me.drakeet.retrofit2.adapter.agera.HttpException;
 import retrofit2.Response;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
@@ -125,48 +126,72 @@ public class RepositoryListViewModel extends BaseObservable implements Updatable
                     .observe()
                     .onUpdatesPer(500)
                     .goTo(NETWORK_EXECUTOR)
-                    .attemptGetFrom(repositoryService.getResponseGitRepositories(language, "starts", String.valueOf(page)))
-                    .orSkip()
-                    .thenTransform(new Function<Response<GitRepositories>, Result<List<GitRepository>>>() {
-                        @NonNull
-                        @Override
-                        public Result<List<GitRepository>> apply(@NonNull Response<GitRepositories> response) {
-                            Result<List<GitRepository>> result;
-                            if (response.isSuccessful()) {
-                                result = Result.success(response.body().getGitRepositoryList());
-                            } else {
-                                result = Result.failure(new HttpException(response));
-                            }
-                            return result;
-                        }
-                    })
+                    .attemptGetFrom(repositoryService.getGitRepositories(language, "starts", String.valueOf(page)))
+                    .orEnd(getEndThrowable())
+                    .thenTransform(getRepositoryListWithMoreStars())
+                    .onDeactivation(RepositoryConfig.SEND_INTERRUPT)
                     .compile();
 
             mBackground.addUpdatable(this);
         }
     }
 
-    private Function<GitRepositories, Result<List<GitRepository>>>
-            getRepositoryListWithMoreStars = Functions.functionFrom(GitRepositories.class)
-            .unpack(new Function<GitRepositories, List<GitRepository>>() {
-                @NonNull
-                @Override
-                public List<GitRepository> apply(@NonNull GitRepositories gitRepositories) {
-                    return gitRepositories.getGitRepositoryList();
+    private Function<GitRepositories, Result<List<GitRepository>>> getRepositoryListWithMoreStars() {
+        return Functions.functionFrom(GitRepositories.class)
+                .unpack(new Function<GitRepositories, List<GitRepository>>() {
+                    @NonNull
+                    @Override
+                    public List<GitRepository> apply(@NonNull GitRepositories gitRepositories) {
+                        return gitRepositories.getGitRepositoryList();
+                    }
+                }).filter(new Predicate<GitRepository>() {
+                    @Override
+                    public boolean apply(@NonNull GitRepository gitRepository) {
+                        return gitRepository.getStarsCount() > 10;
+                    }
+                })
+                .thenApply(new Function<List<GitRepository>, Result<List<GitRepository>>>() {
+                    @NonNull
+                    @Override
+                    public Result<List<GitRepository>> apply(@NonNull List<GitRepository> input) {
+                        return Result.absentIfNull(input);
+                    }
+                });
+    }
+
+
+    private Function<Response<GitRepositories>, Result<List<GitRepository>>> transformResponse() {
+        return new Function<Response<GitRepositories>, Result<List<GitRepository>>>() {
+            @NonNull
+            @Override
+            public Result<List<GitRepository>> apply(@NonNull Response<GitRepositories> response) {
+                Result<List<GitRepository>> result;
+                if (response.isSuccessful()) {
+                    result = Result.success(response.body().getGitRepositoryList());
+                } else {
+                    result = Result.failure(new HttpException(response));
                 }
-            }).filter(new Predicate<GitRepository>() {
-                @Override
-                public boolean apply(@NonNull GitRepository gitRepository) {
-                    return gitRepository.getStarsCount() > 0;
-                }
-            })
-            .thenApply(new Function<List<GitRepository>, Result<List<GitRepository>>>() {
-                @NonNull
-                @Override
-                public Result<List<GitRepository>> apply(@NonNull List<GitRepository> input) {
-                    return Result.absentIfNull(input);
-                }
-            });
+                return result;
+            }
+        };
+    }
+
+    private Function<Throwable, Result<List<GitRepository>>> getEndThrowable() {
+        return new Function<Throwable, Result<List<GitRepository>>>() {
+            @NonNull
+            @Override
+            public Result<List<GitRepository>> apply(@NonNull Throwable throwable) {
+                setLoading(false);
+                setLoadingMore(false);
+
+                Log.e("onFailure", throwable.getLocalizedMessage());
+                setGitRepositoryList(null);
+                setErrorMessage("Request Failure!");
+
+                return Result.absent();
+            }
+        };
+    }
 
     @Override
     public void update() {

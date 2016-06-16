@@ -1,9 +1,9 @@
 package com.wellingtonmb88.gitrepo.retrofit;
 
-import com.wellingtonmb88.gitrepo.adapter.agera.AgeraCallAdapterFactory;
 
 import java.util.concurrent.TimeUnit;
 
+import me.drakeet.retrofit2.adapter.agera.AgeraCallAdapterFactory;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

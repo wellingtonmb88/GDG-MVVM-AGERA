@@ -55,5 +55,5 @@ dependencies {
     compile 'com.google.android.agera:agera:1.0.0-rc2'
     compile 'com.google.android.agera:net:1.0.0-rc2'
 
-    compile 'me.drakeet.retrofit2:adapter-agera:2.0.4'
+    compile 'me.drakeet.retrofit2:adapter-agera:2.1.0'
 }
